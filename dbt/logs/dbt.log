@@ -1,0 +1,30 @@
+[0m12:12:23.495219 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7c62826aa190>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7c62829e0450>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7c6285205d50>]}
+
+
+============================== 12:12:23.504174 | 492fbbee-4aed-4144-881e-e2a74f367326 ==============================
+[0m12:12:23.504174 [info ] [MainThread]: Running with dbt=1.11.2
+[0m12:12:23.505359 [debug] [MainThread]: running dbt with arguments {'empty': 'None', 'printer_width': '80', 'version_check': 'True', 'use_experimental_parser': 'False', 'indirect_selection': 'eager', 'static_parser': 'True', 'debug': 'False', 'partial_parse': 'True', 'log_cache_events': 'False', 'invocation_command': 'dbt init logistics_analytics', 'no_print': 'None', 'fail_fast': 'False', 'send_anonymous_usage_stats': 'True', 'log_format': 'default', 'quiet': 'False', 'log_path': 'logs', 'profiles_dir': '/root/.dbt', 'cache_selected_only': 'False', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'use_colors': 'True', 'target_path': 'None', 'introspect': 'True', 'warn_error': 'None', 'write_json': 'True'}
+[0m12:12:23.527695 [debug] [MainThread]: Starter project path: /usr/local/lib/python3.11/site-packages/dbt/include/starter_project
+[0m12:12:23.676125 [info ] [MainThread]: 
+Your new dbt project "logistics_analytics" was created!
+
+For more information on how to configure the profiles.yml file,
+please consult the dbt documentation here:
+
+  https://docs.getdbt.com/docs/configure-your-profile
+
+One more thing:
+
+Need help? Don't hesitate to reach out to us via GitHub issues or on Slack:
+
+  https://community.getdbt.com/
+
+Happy modeling!
+
+[0m12:12:23.677450 [info ] [MainThread]: Setting up your profile.
+[0m12:12:26.780147 [info ] [MainThread]: Profile logistics_analytics written to /root/.dbt/profiles.yml using target's sample configuration. Once updated, you'll be able to start developing with dbt.
+[0m12:12:26.784689 [debug] [MainThread]: Resource report: {"command_name": "init", "command_success": true, "command_wall_clock_time": 3.349387, "process_in_blocks": "1624", "process_kernel_time": 0.38208, "process_mem_max_rss": "127300", "process_out_blocks": "56", "process_user_time": 1.202428}
+[0m12:12:26.786057 [debug] [MainThread]: Command `dbt init` succeeded at 12:12:26.785923 after 3.35 seconds
+[0m12:12:26.787176 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7c6282644210>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7c628257a510>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7c62825790d0>]}
+[0m12:12:26.788347 [debug] [MainThread]: Flushing usage events
+[0m12:12:27.631794 [debug] [MainThread]: An error was encountered while trying to flush usage events
