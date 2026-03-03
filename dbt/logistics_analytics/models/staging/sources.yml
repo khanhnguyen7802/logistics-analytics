@@ -1,0 +1,19 @@
+version: 1
+
+sources:
+  - name: raw_data
+    description: >
+      Raw data about transportation and logistics operations.
+    database: logistics_tracking               
+    schema: raw                         
+
+    tables:
+      - name: tracking_data
+        description: >
+          Tracking data for logistics operations.
+          Some highlighted information: 
+            - transportation details 
+            - operations & gps 
+            - suppliers & customers
+            - transported materials
+          

@@ -2,12 +2,13 @@ logistics_analytics:
   outputs:
     dev:
       type: duckdb
-      path: dev.duckdb
+      path: /workspace/logistics_tracking.duckdb
       threads: 1
+      schema: raw
 
     prod:
       type: duckdb
-      path: prod.duckdb
+      path: /workspace/logistics_tracking.duckdb
       threads: 4
 
   target: dev

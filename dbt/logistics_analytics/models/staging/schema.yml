@@ -1,0 +1,19 @@
+models:
+  - name: stg_logistics
+    description: >
+      This staging model cleans up column names, casts data types, and handles "NULL" text values in the raw tracking data.
+    columns:
+      - name: shipment_id
+        description: Unique identifier for each shipment.
+      - name: event_timestamp
+        description: Timestamp of the tracking event.
+      - name: current_location_latitude
+        description: Latitude of the current location.
+      - name: current_location_longitude
+        description: Longitude of the current location.
+      - name: supplier_id
+        description: Identifier for the supplier involved in the shipment.
+      - name: customer_id
+        description: Identifier for the customer receiving the shipment.
+      - name: material_type
+        description: Type of material being transported.

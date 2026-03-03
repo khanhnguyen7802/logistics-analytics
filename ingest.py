@@ -1,9 +1,10 @@
 import duckdb
 from pathlib import Path
 
+BASE_DIR = Path(__file__).resolve().parent
+DATA_CSV_PATH = BASE_DIR / 'data' / 'logistics_data.csv'
+DATA_PARQUET_PATH = BASE_DIR / 'data' / 'logistics_data.parquet'
 
-DATA_CSV_PATH = '.\data\logistics_data.csv'
-DATA_PARQUET_PATH = '.\data\logistics_data.parquet'
 def convert_files():
     
   print(f"Converting csv to parquet...")
@@ -12,7 +13,7 @@ def convert_files():
 
   if parquet_path.is_file():
     print("File already existed!")
-  else: 
+  else:
     con = duckdb.connect()
     con.execute(f"""
           COPY (SELECT * FROM read_csv_auto('{DATA_CSV_PATH}'))
@@ -24,12 +25,13 @@ def convert_files():
 
 
 if __name__ == "__main__":
-  
+  convert_files()
+
   con = duckdb.connect("logistics_tracking.duckdb")
   con.execute("CREATE SCHEMA IF NOT EXISTS raw")
 
   con.execute(f"""
-      CREATE OR REPLACE TABLE raw.primary_data AS
+      CREATE OR REPLACE TABLE raw.tracking_data AS
       SELECT * FROM read_parquet('{DATA_PARQUET_PATH}')
       """)
 
