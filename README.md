@@ -1,3 +1,25 @@
+<h1 align="center">Logistics Operation Analytics</h1>
+
+<p align="center">
+  An integrated DE + DA project building an automated data pipeline to power scalable analytics and executive-ready dashboards for logistics operations.
+</p>
+
+## About 
+
+## Tech stack
+- Dataset: provided **.csv file** (in [data/ folder](./data/logistics_data.csv))
+- Database: [DuckDB](https://duckdb.org/) 
+- Orchestration: [Airflow](https://airflow.apache.org/)
+- Data transformation: [dbt](https://www.getdbt.com/) *(data build tool)*
+- Visualization: [Apache Superset](https://superset.apache.org/) 
+- Containerization: Docker
+
+## Architecture
+
+## Setup 
+
+## 
+
 dbt_project.yml
 ├── models/
 │   ├── staging/
