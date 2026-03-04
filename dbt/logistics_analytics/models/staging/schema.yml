@@ -1,19 +1,130 @@
 models:
   - name: stg_logistics
     description: >
-      This staging model cleans up column names, casts data types, and handles "NULL" text values in the raw tracking data.
+      Raw staging layer that cleans up column names, casts data types, and handles "NULL" text values.
+      This is a view that performs minimal transformations to normalize the raw tracking data.
     columns:
-      - name: shipment_id
-        description: Unique identifier for each shipment.
-      - name: event_timestamp
-        description: Timestamp of the tracking event.
+      - name: booking_id
+        description: Unique identifier for each booking.
+        tests:
+          - not_null
+      - name: vehicle_registration
+        description: The unique registration number of the vehicle used for transportation.
+      - name: driver_name
+        description: The name of the driver assigned to the trip.
+      - name: driver_mobile_no
+        description: The contact number of the driver.
+      - name: customer_name
+        description: The name of the customer receiving the shipment.
+      - name: supplier_name
+        description: The name of the supplier sending the shipment.
+      - name: material_name
+        description: A description of the materials being transported in the shipment.
+      - name: origin_location_name
+        description: The initial point from which the shipment starts.
+      - name: origin_location_latitude
+        description: Latitude of the origin location.
+      - name: origin_location_longitude
+        description: Longitude of the origin location.
+      - name: destination_location
+        description: The final destination where the shipment is to be delivered.
+      - name: destination_location_latitude
+        description: Latitude of the destination location.
+      - name: destination_location_longitude
+        description: Longitude of the destination location.
+      - name: gps_provider
+        description: GPS service provider tracking the vehicle.
+      - name: data_ping_time
+        description: The timestamp of the last recorded GPS data ping from the vehicle.
+      - name: current_location
+        description: The most recent known location of the vehicle.
       - name: current_location_latitude
-        description: Latitude of the current location.
+        description: The latitude of the vehicle's current location.
       - name: current_location_longitude
-        description: Longitude of the current location.
-      - name: supplier_id
-        description: Identifier for the supplier involved in the shipment.
-      - name: customer_id
-        description: Identifier for the customer receiving the shipment.
-      - name: material_type
-        description: Type of material being transported.
+        description: The longitude of the vehicle's current location.
+      - name: shipment_type
+        description: Indicates whether the shipment is a Market (spot booking) or Regular (contract-based) trip.
+      - name: transportation_distance
+        description: The total distance covered by the vehicle during the trip in kilometers.
+      - name: on_time
+        description: Indicates whether the vehicle arrived on time (Yes/No).
+      - name: booking_date
+        description: The date and time when the booking was created.
+      - name: trip_start_date
+        description: The actual start date and time of the trip.
+      - name: trip_end_date
+        description: The estimated date and time of arrival.
+      - name: planned_eta
+        description: The expected time of arrival at the destination as per the trip plan.
+      - name: actual_eta
+        description: The actual time of arrival at the destination.
+      - name: vehicle_type
+        description: The type of vehicle used for the shipment (e.g., 32 FT Truck, Tata Ace, Multi-Axle).
+      - name: min_kms_per_day
+        description: The minimum distance the vehicle is expected to cover in a single day.
+
+  - name: stg_logistics_cleaned
+    description: >
+      Cleaned and processed staging table with deduplication and null value handling.
+      Ensures one record per booking_id by keeping the most recent record.
+      Handles NULL-like strings (NULL, NA, null, Null) using the handle_null_values macro.
+    columns:
+      - name: booking_id
+        description: Unique identifier for each booking (deduplicated).
+        tests:
+          - unique
+          - not_null
+      - name: vehicle_registration
+        description: The unique registration number of the vehicle used for transportation. Null values replaced with 'Unknown'.
+      - name: driver_name
+        description: The name of the driver assigned to the trip. Null values replaced with 'Unknown'.
+      - name: driver_mobile_no
+        description: The contact number of the driver. Null values replaced with 'Unknown'.
+      - name: customer_name
+        description: The name of the customer receiving the shipment. Null values replaced with 'Unknown'.
+      - name: supplier_name
+        description: The name of the supplier sending the shipment. Null values replaced with 'Unknown'.
+      - name: material_name
+        description: A description of the materials being transported in the shipment. Null values replaced with 'Unknown'.
+      - name: origin_location_name
+        description: The initial point from which the shipment starts. Null values replaced with 'Unknown'.
+      - name: origin_location_latitude
+        description: Latitude of the origin location (numeric).
+      - name: origin_location_longitude
+        description: Longitude of the origin location (numeric).
+      - name: destination_location
+        description: The final destination where the shipment is to be delivered. Null values replaced with 'Unknown'.
+      - name: destination_location_latitude
+        description: Latitude of the destination location (numeric).
+      - name: destination_location_longitude
+        description: Longitude of the destination location (numeric).
+      - name: gps_provider
+        description: GPS service provider tracking the vehicle. Null values replaced with 'Unknown'.
+      - name: data_ping_time
+        description: The timestamp of the last recorded GPS data ping from the vehicle.
+      - name: current_location
+        description: The most recent known location of the vehicle. Null values replaced with 'Unknown'.
+      - name: current_location_latitude
+        description: The latitude of the vehicle's current location (numeric).
+      - name: current_location_longitude
+        description: The longitude of the vehicle's current location (numeric).
+      - name: shipment_type
+        description: Indicates whether the shipment is a Market (spot booking) or Regular (contract-based) trip.
+      - name: transportation_distance
+        description: The total distance covered by the vehicle during the trip in kilometers (numeric).
+      - name: on_time
+        description: Indicates whether the vehicle arrived on time (Yes/No).
+      - name: booking_date
+        description: The date when the booking was created (type date).
+      - name: trip_start_date
+        description: The actual start date and time of the trip (parsed from '%m/%d/%y %H:%M' format).
+      - name: trip_end_date
+        description: The estimated date and time of arrival (parsed from '%m/%d/%y %H:%M' format).
+      - name: planned_eta
+        description: The expected time of arrival at the destination as per the trip plan.
+      - name: actual_eta
+        description: The actual time of arrival at the destination (parsed from '%m/%d/%y %H:%M' format).
+      - name: vehicle_type
+        description: The type of vehicle used for the shipment (e.g., 32 FT Truck, Tata Ace, Multi-Axle). Null values replaced with 'Unknown'.
+      - name: min_kms_per_day
+        description: The minimum distance the vehicle is expected to cover in a single day (numeric). Null values replaced with -1.
