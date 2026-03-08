@@ -25,6 +25,9 @@ x-airflow-common:
     AIRFLOW__CORE__DAGS_FOLDER: '/opt/airflow/logistics_analytics_project/pipelines/dags'
     # Point to logs folder in the mounted project
     AIRFLOW__LOGGING__BASE_LOG_FOLDER: "/opt/airflow/logistics_analytics_project/pipelines/logs"
+    # The following line can be used to set a custom config file, stored in the local config folder
+    AIRFLOW_CONFIG: '/opt/airflow/logistics_analytics_project/pipelines/config/airflow.cfg'
+
 
     # Optimization for low memory environment (4GB RAM)
     AIRFLOW__SCHEDULER__PARSING_PROCESSES: 1 # limits the scheduler to parsing one DAG at a time

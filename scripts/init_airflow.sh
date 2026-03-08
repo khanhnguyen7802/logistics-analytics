@@ -65,7 +65,7 @@ mkdir -p \
 # Change ownership of the newly created directories to ${AIRFLOW_UID}:0"
 echo "Setting ownership to ${AIRFLOW_UID}:0"
 
-chown -R "${AIRFLOW_UID}:0" ${AIRFLOW_PROJECT} || true
+chown -R "${AIRFLOW_UID}:0" ${PIPELINES_DIR} || true
 
 # --------------------------------------------------
 # 5. Initialize Airflow configuration and Database
@@ -85,6 +85,17 @@ echo "Airflow version:"
 echo
 echo "Directory structure:"
 ls -la ${PIPELINES_DIR}
+
+
+# --------------------------------------------------
+# 7. Fix folder permissions
+# --------------------------------------------------
+
+# Change ownership of the newly created directories to ${AIRFLOW_UID}:0"
+echo "Setting ownership to ${AIRFLOW_UID}:0"
+
+chown -R "${AIRFLOW_UID}:0" ${AIRFLOW_PROJECT} || true
+
 
 echo
 echo "Airflow initialization complete."
