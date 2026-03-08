@@ -1,0 +1,3 @@
+# External dependencies for Airflow DAGs and scripts
+duckdb==1.4.4
+apache-airflow-providers-dbt-cloud>=3.8.0

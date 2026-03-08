@@ -1,9 +1,22 @@
 import duckdb
 from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve().parent
+
+
+
+# get the project root directory by using marker file 
+def get_project_root():
+    """Find project root by looking for docker-compose.yaml or .git"""
+    current = Path(__file__).resolve()
+    for parent in current.parents:
+        if (parent / 'docker-compose.yaml').exists() or (parent / '.git').exists():
+            return parent
+    return current.parent  # fallback
+
+BASE_DIR = get_project_root()
 DATA_CSV_PATH = BASE_DIR / 'data' / 'logistics_data.csv'
 DATA_PARQUET_PATH = BASE_DIR / 'data' / 'logistics_data.parquet'
+
 
 def convert_files():
     
@@ -21,12 +34,9 @@ def convert_files():
       """)
     con.close()
 
-    print(f"Completed {DATA_PARQUET_PATH}")
+    print(f"✅ Completed converting into {DATA_PARQUET_PATH}")
 
-
-if __name__ == "__main__":
-  convert_files()
-
+def create_duckdb_table():
   con = duckdb.connect("logistics_tracking.duckdb")
   con.execute("CREATE SCHEMA IF NOT EXISTS raw")
 
@@ -36,3 +46,8 @@ if __name__ == "__main__":
       """)
 
   con.close()
+
+
+if __name__ == "__main__":
+  convert_files()
+  create_duckdb_table()

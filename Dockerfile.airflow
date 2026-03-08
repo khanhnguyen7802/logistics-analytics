@@ -1,6 +1,6 @@
 FROM apache/airflow:3.1.3
 
-# Switch to root to install system dependencies if needed
+# Switch to root to install system and Python dependencies
 USER root
 
 # Install system packages if required (optional - add as needed)
@@ -8,3 +8,15 @@ RUN apt-get update && apt-get install -y curl && apt-get clean
 
 # Switch back to airflow user
 USER airflow
+
+# Copy and install Python requirements
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt 
+
+USER root
+RUN rm /tmp/requirements.txt
+
+
+
+
+
