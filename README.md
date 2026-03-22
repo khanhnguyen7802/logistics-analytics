@@ -4,14 +4,15 @@
   An integrated DE + DA project building an automated data pipeline to power scalable analytics and executive-ready dashboards for logistics operations.
 </p>
 
-## About 
+## About
 
 ## Tech stack
+
 - Dataset: provided **.csv file** (in [data/ folder](./data/logistics_data.csv))
-- Database: [DuckDB](https://duckdb.org/) 
+- Database: [DuckDB](https://duckdb.org/)
 - Orchestration: [Airflow](https://airflow.apache.org/)
-- Data transformation: [dbt](https://www.getdbt.com/) *(data build tool)*
-- Visualization: [Apache Superset](https://superset.apache.org/) 
+- Data transformation: [dbt](https://www.getdbt.com/) _(data build tool)_
+- Visualization: [Apache Superset](https://superset.apache.org/)
 - Containerization: Docker
 
 ## Architecture
@@ -30,7 +31,7 @@
 3. Superset initializes metadata, creates admin account, and starts web UI.
 4. Superset connects to DuckDB at `duckdb:////workspace/logistics_tracking.duckdb`.
 
-## Setup 
+## Setup
 
 ### 1) Configure environment
 
@@ -66,4 +67,3 @@ Superset should query dashboard-serving marts:
 - `marts.agg_problem_routes`
 - `marts.agg_problem_supplier_route`
 - `marts.agg_problem_vehicle_utilization`
-
