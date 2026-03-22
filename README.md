@@ -16,76 +16,54 @@
 
 ## Architecture
 
+### Runtime services
+
+- Airflow (`airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`) orchestrates ingestion and dbt tasks.
+- Postgres (`postgres`) stores Airflow and Superset metadata.
+- dbt (`dbt`) provides transformation runtime and project dependencies.
+- Superset (`superset-init`, `superset`) initializes and serves BI dashboards.
+
+### End-to-end flow
+
+1. Airflow runs ingestion from CSV to parquet and then to DuckDB raw schema.
+2. Airflow executes `dbt deps`, `dbt run`, and `dbt test`.
+3. Superset initializes metadata, creates admin account, and starts web UI.
+4. Superset connects to DuckDB at `duckdb:////workspace/logistics_tracking.duckdb`.
+
 ## Setup 
 
-## 
+### 1) Configure environment
 
-dbt_project.yml
-├── models/
-│   ├── staging/
-│   │   └── stg_raw_trips.sql (deduplication, type casting)
-│   ├── marts/
-│   │   ├── dimensions/
-│   │   │   ├── dim_vehicles.sql
-│   │   │   ├── dim_drivers.sql
-│   │   │   ├── dim_customers.sql
-│   │   │   ├── dim_suppliers.sql
-│   │   │   ├── dim_locations.sql
-│   │   │   └── dim_materials.sql
-│   │   └── facts/
-│   │       └── fct_trips.sql
-│   └── sources.yml (define raw Parquet as source)
-└── tests/
+Copy `.env.example` to `.env` and adjust credentials as needed.
 
+### 2) Build and start the stack
 
-1. trips (FACT TABLE - Core transactional)
-   - booking_id (PK)
-   - booking_date, trip_start_date, trip_end_date
-   - vehicle_id (FK)
-   - driver_id (FK)
-   - customer_id (FK)
-   - supplier_id (FK)
-   - origin_location_id (FK)
-   - destination_location_id (FK)
-   - material_id (FK)
-   - shipment_type
-   - transportation_distance_km
-   - planned_eta, actual_eta
-   - ontime (Yes/No)
+```bash
+docker compose up --build -d
+```
 
-2. vehicles (DIMENSION)
-   - vehicle_id (PK)
-   - vehicle_registration
-   - vehicle_type
-   - minimum_kms_per_day
+### 3) Access services
 
-3. drivers (DIMENSION)
-   - driver_id (PK)
-   - driver_name
-   - driver_mobile_no
+- Airflow UI: `http://localhost:8080`
+- Superset UI: `http://localhost:8088`
 
-4. customers (DIMENSION)
-   - customer_id (PK)
-   - customer_name
+### 4) Run the pipeline
 
-5. suppliers (DIMENSION)
-   - supplier_id (PK)
-   - supplier_name
+Trigger DAG `my_pipeline` in Airflow to execute:
 
-6. locations (DIMENSION)
-   - location_id (PK)
-   - location_name
-   - latitude
-   - longitude
+1. `ingest_data`
+2. `create_duckdb_table`
+3. `dbt_deps`
+4. `dbt_run`
+5. `dbt_test`
 
-7. materials (DIMENSION)
-   - material_id (PK)
-   - material_name
+### 5) Expected output datasets for BI
 
-8. gps_tracking (FACT TABLE - Real-time tracking)
-   - tracking_id (PK)
-   - booking_id (FK)
-   - gps_provider
-   - data_ping_time
-   - current_location
-   - current_latitude, current_longitude
+Superset should query dashboard-serving marts:
+
+- `marts.agg_exec_summary`
+- `marts.agg_problem_on_time`
+- `marts.agg_problem_routes`
+- `marts.agg_problem_supplier_route`
+- `marts.agg_problem_vehicle_utilization`
+
