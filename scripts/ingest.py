@@ -1,7 +1,6 @@
+import pandas as pd
 import duckdb
 from pathlib import Path
-
-
 
 
 # get the project root directory by using marker file 
@@ -14,27 +13,42 @@ def get_project_root():
     return current.parent  # fallback
 
 BASE_DIR = get_project_root()
-DATA_CSV_PATH = BASE_DIR / 'data' / 'logistics_data.csv'
+DATA_EXCEL_PATH = BASE_DIR / 'data' / 'transportation_logistics_tracking_dataset.xlsx'
 DATA_PARQUET_PATH = BASE_DIR / 'data' / 'logistics_data.parquet'
 
+def read_excel_file():
 
-def convert_files():
-    
-  print(f"Converting csv to parquet...")
+  xl = pd.ExcelFile(DATA_EXCEL_PATH)
+  print("Sheets found:", xl.sheet_names)
+
+
+  df = pd.read_excel(
+      DATA_EXCEL_PATH,
+      sheet_name="Primary Data",
+      parse_dates=["Booking Date", "Data Ping time", "Planned ETA", "Actual ETA", "Trip Start Date", "Trip End Date"],
+  )
+
+  print(f"\nLoaded {len(df):} rows!")
+
+  return df 
+
+
+
+def convert_to_parquet():
+  df = read_excel_file()
+
+  print(f"Converting  to parquet file ...")
   
   parquet_path = Path(DATA_PARQUET_PATH)
 
   if parquet_path.is_file():
     print("File already existed!")
   else:
-    con = duckdb.connect()
-    con.execute(f"""
-          COPY (SELECT * FROM read_csv_auto('{DATA_CSV_PATH}'))
-          TO '{DATA_PARQUET_PATH}' (FORMAT PARQUET)
-      """)
-    con.close()
+    df.to_parquet(DATA_PARQUET_PATH, index=False, engine="pyarrow")
+    print(f"\n Saved to '{DATA_PARQUET_PATH}'")
 
     print(f"✅ Completed converting into {DATA_PARQUET_PATH}")
+
 
 def create_duckdb_table():
   con = duckdb.connect("logistics_tracking.duckdb")
@@ -49,5 +63,5 @@ def create_duckdb_table():
 
 
 if __name__ == "__main__":
-  convert_files()
+  convert_to_parquet()
   create_duckdb_table()
