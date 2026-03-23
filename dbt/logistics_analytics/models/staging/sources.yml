@@ -64,9 +64,9 @@ sources:
           - name: "Trip Start Date"
             description: The actual start date and time of the trip.
           - name: "Trip End Date"
-            description: The estimate date and time of arrival.
+            description: The revised ETA updated during the trip.
           - name: "Planned ETA"
-            description: The expected time of arrival at the destination as per the trip plan.
+            description: Pre-trip estimate - What was planned before departure.
           - name: "Actual ETA"
             description: The actual time of arrival at the destination.
           - name: "Vehicle Type"

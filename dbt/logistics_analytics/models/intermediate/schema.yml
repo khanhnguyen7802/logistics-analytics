@@ -1,0 +1,66 @@
+version: 2
+
+models:
+  - name: int_trip_timeliness
+    description: Trip-level timeliness, delay, and efficiency metrics derived from the cleaned staging layer.
+    columns:
+      - name: booking_id
+        description: Unique booking identifier at trip grain.
+        tests:
+          - not_null
+          - unique
+      - name: timeliness_severity
+        description: Timeliness severity bucket based on delay between planned and actual ETA.
+        tests:
+          - accepted_values:
+              values: ['on_time', 'medium', 'high', 'critical', 'unknown']
+      - name: on_time_flag
+        description: Normalized binary indicator for on-time delivery.
+        tests:
+          - accepted_values:
+              values: [0, 1]
+      - name: transportation_distance_km
+        description: Transportation distance in kilometers.
+
+  - name: int_route_performance
+    description: Route-level reliability and delay performance metrics for each origin-destination lane.
+    columns:
+      - name: route_id
+        description: Surrogate key of route defined by origin and destination.
+        tests:
+          - not_null
+          - unique
+      - name: route_risk_severity
+        description: Severity bucket signaling route-level planning risk.
+        tests:
+          - accepted_values:
+              values: ['stable', 'medium', 'high', 'critical', 'low_sample']
+
+
+  - name: int_vehicle_utilization
+    description: Vehicle daily utilization compared to minimum km/day target.
+    columns:
+      - name: vehicle_day_id
+        description: Surrogate key for vehicle and booking date.
+        tests:
+          - not_null
+          - unique
+      - name: utilization_severity
+        description: Severity bucket for daily vehicle underutilization.
+        tests:
+          - accepted_values:
+              values: ['healthy', 'medium', 'high', 'critical', 'unknown']
+
+  - name: int_problem_flags
+    description: Consolidated per-booking problem flags for executive and section dashboards.
+    columns:
+      - name: booking_id
+        description: Booking identifier inherited from int_trip_timeliness.
+        tests:
+          - not_null
+          - unique
+      - name: has_critical_issue
+        description: Whether any problem dimension is currently in critical state.
+        tests:
+          - accepted_values:
+              values: [0, 1]

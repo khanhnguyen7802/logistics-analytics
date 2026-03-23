@@ -117,13 +117,13 @@ models:
       - name: booking_date
         description: The date when the booking was created (type date).
       - name: trip_start_date
-        description: The actual start date and time of the trip (parsed from '%m/%d/%y %H:%M' format).
-      - name: trip_end_date
-        description: The estimated date and time of arrival (parsed from '%m/%d/%y %H:%M' format).
+        description: The actual start date and time of the trip.
+      - name: estimated_trip_end_date
+        description: The estimated date and time of arrival (updated during the trip).
       - name: planned_eta
-        description: The expected time of arrival at the destination as per the trip plan.
+        description: The initial expected time of arrival at the destination (pre-trip estimate).
       - name: actual_eta
-        description: The actual time of arrival at the destination (parsed from '%m/%d/%y %H:%M' format).
+        description: The actual time of arrival at the destination.
       - name: vehicle_type
         description: The type of vehicle used for the shipment (e.g., 32 FT Truck, Tata Ace, Multi-Axle). Null values replaced with 'Unknown'.
       - name: min_kms_per_day

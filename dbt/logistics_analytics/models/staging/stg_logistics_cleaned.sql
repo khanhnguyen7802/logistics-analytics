@@ -36,7 +36,7 @@ cleaned as (
         
         -- GPS & Tracking
         {{ handle_null_values('gps_provider', "'Unknown'") }} as gps_provider,
-        data_ping_time, 
+        data_ping_time,
         {{ handle_null_values('current_location', "'Unknown'") }} as current_location,
         current_location_latitude,
         current_location_longitude, 
@@ -46,10 +46,10 @@ cleaned as (
         transportation_distance,
         on_time,
         booking_date,
-        try_strptime(trip_start_date, '%m/%d/%y %H:%M') as trip_start_date,
-        try_strptime(trip_end_date, '%m/%d/%y %H:%M') as trip_end_date,
+        trip_start_date,
+        trip_end_date as estimated_trip_end_date,  -- renamed to avoid confusion
         planned_eta,
-        try_strptime(actual_eta, '%m/%d/%y %H:%M') as actual_eta,
+        actual_eta,
         
         -- Vehicle specifics
         {{ handle_null_values('vehicle_type', "'Unknown'") }} as vehicle_type,
