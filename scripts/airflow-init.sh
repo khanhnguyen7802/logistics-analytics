@@ -47,16 +47,19 @@ fi
 # 3. Create Airflow directories
 # --------------------------------------------------
 
-AIRFLOW_PROJECT=/opt/airflow/logistics_analytics_project
-PIPELINES_DIR=${AIRFLOW_PROJECT}/pipelines
+AIRFLOW_HOME_DIR=/opt/airflow
+DAGS_DIR=${AIRFLOW_HOME_DIR}/dags
+CONFIG_DIR=${AIRFLOW_HOME_DIR}/config
+LOGS_DIR=${AIRFLOW_HOME_DIR}/logs
+PLUGINS_DIR=${AIRFLOW_HOME_DIR}/plugins
 
 echo "Creating Airflow directories..."
 
 mkdir -p \
-  ${PIPELINES_DIR}/dags \
-  ${PIPELINES_DIR}/config \
-  ${PIPELINES_DIR}/logs \
-  ${PIPELINES_DIR}/plugins
+  ${DAGS_DIR} \
+  ${CONFIG_DIR} \
+  ${LOGS_DIR} \
+  ${PLUGINS_DIR}
 
 # --------------------------------------------------
 # 4. Fix file permissions
@@ -65,7 +68,11 @@ mkdir -p \
 # Change ownership of the newly created directories to ${AIRFLOW_UID}:0"
 echo "Setting ownership to ${AIRFLOW_UID}:0"
 
-chown -R "${AIRFLOW_UID}:0" ${PIPELINES_DIR} || true
+chown -R "${AIRFLOW_UID}:0" \
+  ${DAGS_DIR} \
+  ${CONFIG_DIR} \
+  ${LOGS_DIR} \
+  ${PLUGINS_DIR} || true
 
 # --------------------------------------------------
 # 5. Initialize Airflow configuration and Database
@@ -84,7 +91,7 @@ echo "Airflow version:"
 
 echo
 echo "Directory structure:"
-ls -la ${PIPELINES_DIR}
+ls -la ${AIRFLOW_HOME_DIR}
 
 
 # --------------------------------------------------
@@ -94,7 +101,7 @@ ls -la ${PIPELINES_DIR}
 # Change ownership of the newly created directories to ${AIRFLOW_UID}:0"
 echo "Setting ownership to ${AIRFLOW_UID}:0"
 
-chown -R "${AIRFLOW_UID}:0" ${AIRFLOW_PROJECT} || true
+chown -R "${AIRFLOW_UID}:0" ${AIRFLOW_HOME_DIR} || true
 
 
 echo

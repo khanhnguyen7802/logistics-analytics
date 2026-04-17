@@ -9,12 +9,13 @@ RUN apt-get update && apt-get install -y curl && apt-get clean
 # Switch back to airflow user
 USER airflow
 
-# Copy and install Python requirements
-COPY requirements.txt /tmp/requirements.txt
-RUN pip install --no-cache-dir -r /tmp/requirements.txt 
+# Copy and install project dependencies from pyproject.toml
+COPY --chown=airflow:root pyproject.toml /tmp/project/pyproject.toml
+COPY --chown=airflow:root src /tmp/project/src
+RUN pip install --no-cache-dir /tmp/project
 
 USER root
-RUN rm /tmp/requirements.txt
+RUN rm -rf /tmp/project
 
 
 
