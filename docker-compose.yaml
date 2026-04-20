@@ -27,6 +27,8 @@ x-airflow-common:
     - ${AIRFLOW_PROJ_DIR}/scripts:/opt/airflow/scripts
 
   user: "${AIRFLOW_UID}:0"
+  networks:
+    - logistics_network
   depends_on:
     &airflow-common-depends-on
     postgres:
@@ -36,11 +38,16 @@ x-airflow-common:
 x-superset-user: &superset-user root
 x-superset-volumes: &superset-volumes
   # /app/pythonpath_docker will be appended to the PYTHONPATH in the final container
-  - ./docker:/app/docker
-  - ./superset:/app/superset
+  - ./superset:/app/my_superset
   - superset_home:/app/superset_home
-  - ./docker/superset/superset_config.py:/app/pythonpath/superset_config.py
-
+  - ./superset/superset_config.py:/app/pythonpath/superset_config.py
+x-superset-env: &superset-env
+  DATABASE_USER: ${DATABASE_USER:-superset}
+  DATABASE_PASSWORD: ${DATABASE_PASSWORD:-superset}
+  POSTGRES_USER: ${DATABASE_USER:-superset}
+  POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-superset}
+  EXAMPLES_USER: ${EXAMPLES_USER:-examples}
+  EXAMPLES_PASSWORD: ${EXAMPLES_PASSWORD:-examples}
 
 
 
@@ -61,7 +68,11 @@ services:
       interval: 10s
       retries: 3
       start_period: 5s
-    restart: always
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${DATABASE_PORT:-5432}:5432"
+    networks:
+      - logistics_network
 
 
   airflow-apiserver:
@@ -124,6 +135,8 @@ services:
       _AIRFLOW_WWW_USER_CREATE: 'true'
       _AIRFLOW_WWW_USER_USERNAME: ${_AIRFLOW_WWW_USER_USERNAME}
       _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD}
+    networks:
+      - logistics_network
     user: "0:0"
 
   duckdb:
@@ -151,43 +164,77 @@ services:
     stdin_open: true
     tty: true
     command: sleep infinity
-    ports:
-      - "8081:8080" # for generated docs ui
+    network_mode: host # dbt docs UI is served via host network
     depends_on:
       - duckdb
 
-  # superset-init:
-  #   image: apache/superset:5.0.0
-  #   env_file:
-  #     - path: superset/.env.example # default
-  #       required: true
-  #   user: *superset-user
-  #   volumes: *superset-volumes
-  #   # command: ["/bin/bash", "/scripts/superset-init.sh"]
-  #   command: ["/app/superset/superset-init.sh"] 
-  #   depends_on:
-  #     postgres:
-  #       condition: service_started
-  #   network_mode: host # to allow connection to postgres 
+  superset-db-init:
+    image: postgres:16
+    env_file:
+      - path: airflow/.env.example # default
+        required: true
+      - path: superset/.env.example
+        required: true
+    environment:
+      <<: *superset-env
+      POSTGRES_USER: ${_AIRFLOW_WWW_USER_USERNAME}
+      POSTGRES_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD}
+    volumes:
+      - ./superset/superset-db-init.sh:/tmp/superset-db-init.sh:ro
+    command: ["/bin/bash", "/tmp/superset-db-init.sh"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - logistics_network
+    restart: "no"
 
-  # superset:
-  #   image: apache/superset:5.0.0
-  #   env_file:
-  #     - path: superset/.env.example # default
-  #       required: true
-  #   volumes: *superset-volumes
-  #   user: *superset-user
-  #   restart: unless-stopped
-  #   command: ["/app/superset/superset-bootstrap.sh", "app"]
-  #   ports:
-  #     - ${SUPERSET_PORT:-8088}:8088
-  #     # When in cypress-mode ->
-  #     - ${CYPRESS_PORT:-8081}:8081
-  #   depends_on:
-  #     postgres:
-  #       condition: service_healthy
-  #     superset-init:
-  #       condition: service_completed_successfully
+  superset-init:
+    image: apache/superset:5.0.0
+    env_file:
+      - path: superset/.env.example # default
+        required: true
+    environment:
+      <<: *superset-env
+    user: *superset-user
+    volumes: *superset-volumes
+    command: ["/app/my_superset/superset-init.sh"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      superset-db-init:
+        condition: service_completed_successfully
+    networks:
+      - logistics_network
+
+  superset:
+    image: apache/superset:5.0.0
+    env_file:
+      - path: superset/.env.example # default
+        required: true
+    environment:
+      <<: *superset-env
+    volumes: *superset-volumes
+    user: *superset-user
+    restart: unless-stopped
+    command: ["/app/my_superset/superset-bootstrap.sh", "app"]
+    ports:
+      - ${SUPERSET_PORT:-8088}:8088
+      # When in cypress-mode ->
+      - ${CYPRESS_PORT:-8081}:8081
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      superset-db-init:
+        condition: service_completed_successfully
+      superset-init:
+        condition: service_completed_successfully
+    networks:
+      - logistics_network
 
   redis:
     image: redis:7
@@ -196,9 +243,20 @@ services:
       - "127.0.0.1:${REDIS_PORT:-6379}:6379"
     volumes:
       - redis:/data
+    networks:
+      - logistics_network
+
+networks:
+  logistics_network:
+    name: logistics_network
+    driver: bridge
+    
 
 volumes:
   postgres-db-volume:
   superset_home:
     external: false
   redis:
+    external: false
+
+
