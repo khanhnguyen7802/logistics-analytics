@@ -110,6 +110,17 @@ services:
       retries: 3
       start_period: 30s
     restart: always
+    volumes:
+    # Re-declare all common volumes here as compose doesn't auto-merge
+    - ${AIRFLOW_PROJ_DIR}:/opt/airflow/logistics_analytics_project
+    - ${AIRFLOW_PROJ_DIR}/airflow/dags:/opt/airflow/dags
+    - ${AIRFLOW_PROJ_DIR}/airflow/logs:/opt/airflow/logs
+    - ${AIRFLOW_PROJ_DIR}/airflow/plugins:/opt/airflow/plugins
+    - ${AIRFLOW_PROJ_DIR}/airflow/config:/opt/airflow/config
+    - ${AIRFLOW_PROJ_DIR}/dbt:/opt/airflow/dbt
+    - ${AIRFLOW_PROJ_DIR}/scripts:/opt/airflow/scripts
+    # Docker socket for dbt container exec
+    - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       <<: *airflow-common-depends-on
       airflow-init:
@@ -156,6 +167,7 @@ services:
     network_mode: host # for duckdb web ui
 
   dbt:
+    container_name: dbt
     build:
       # context: .
       dockerfile: Dockerfile.dbt
