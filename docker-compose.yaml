@@ -41,6 +41,8 @@ x-superset-volumes: &superset-volumes
   - ./superset:/app/my_superset
   - superset_home:/app/superset_home
   - ./superset/superset_config.py:/app/pythonpath/superset_config.py
+  - ./logistics_tracking.duckdb:/app/data/logistics_tracking.duckdb
+
 x-superset-env: &superset-env
   DATABASE_USER: ${DATABASE_USER:-superset}
   DATABASE_PASSWORD: ${DATABASE_PASSWORD:-superset}
