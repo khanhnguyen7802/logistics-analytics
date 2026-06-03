@@ -32,7 +32,7 @@ set -eo pipefail
 #       fi
 #     fi
 # fi
-REQUIREMENTS_LOCAL="/app/superset/requirements-local.txt"
+REQUIREMENTS_LOCAL="/app/my_superset/requirements-local.txt"
 PORT=${PORT:-8088}
 # If Cypress run – overwrite the password for admin and export env variables
 if [ "$CYPRESS_CONFIG" == "true" ]; then
