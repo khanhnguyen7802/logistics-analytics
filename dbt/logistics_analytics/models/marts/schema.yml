@@ -1,0 +1,87 @@
+version: 2
+
+models:
+  - name: agg_exec_summary
+    description: Daily executive summary KPIs used for top-level dashboard tiles.
+    columns:
+      - name: booking_date
+        description: Date bucket for executive KPI snapshot.
+        tests:
+          - not_null
+          - unique
+      - name: total_trips
+        description: Number of trips on a given booking date.
+        tests:
+          - not_null
+
+  - name: agg_problem_on_time
+    description: Trip-level delayed delivery records for on-time risk analysis.
+    columns:
+      - name: booking_id
+        description: Booking identifier for delayed or risky timeliness trips.
+        tests:
+          - not_null
+      - name: timeliness_severity
+        description: Timeliness risk severity.
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['medium', 'high', 'critical']
+
+  - name: agg_problem_routes
+    description: Route-level anomalies highlighting inefficiency and reliability issues.
+    columns:
+      - name: route_id
+        description: Surrogate route key.
+        tests:
+          - not_null
+      - name: route_risk_severity
+        description: Route anomaly severity.
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['medium', 'high', 'critical']
+
+  - name: agg_problem_supplier_route
+    description: Supplier-route combinations with elevated risk indicators.
+    columns:
+      - name: supplier_route_id
+        description: Surrogate key for supplier-route pair.
+        tests:
+          - not_null
+      - name: supplier_route_severity
+        description: Supplier-route misalignment severity.
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['medium', 'high', 'critical']
+
+  - name: agg_problem_vehicle_utilization
+    description: Vehicle-day records showing underutilization issues.
+    columns:
+      - name: vehicle_day_id
+        description: Surrogate key for vehicle-date grain.
+        tests:
+          - not_null
+      - name: utilization_severity
+        description: Utilization risk severity for vehicle-day records.
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['medium', 'high', 'critical']
+
+  - name: agg_booking_volume_week
+    description: Booking volume by weekday and hour for heatmap visualization.
+    columns:
+      - name: day_of_the_week
+        description: Weekday label derived from booking_date.
+        tests:
+          - not_null
+      - name: booking_hour
+        description: Hour of day derived from booking_date.
+        tests:
+          - not_null
+      - name: booking_volume
+        description: Number of bookings in the weekday-hour bucket.
+        tests:
+          - not_null

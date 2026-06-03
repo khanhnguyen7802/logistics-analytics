@@ -11,7 +11,7 @@ aggregated as (
         origin_location_name,
         destination_location,
         count(*) as trip_count,
-        avg(transportation_distance_km) as avg_distance_km,
+        avg(transportation_distance) as avg_distance_km,
         avg(delay_minutes) as avg_delay_minutes,
         avg(on_time_flag) as on_time_rate,
         avg(avg_speed_kmh) as avg_speed_kmh

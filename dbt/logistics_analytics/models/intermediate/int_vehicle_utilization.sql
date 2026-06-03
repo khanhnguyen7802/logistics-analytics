@@ -13,7 +13,7 @@ daily as (
         vehicle_type,
         max(min_kms_per_day) as min_kms_per_day,
         count(*) as trip_count,
-        sum(transportation_distance_km) as total_distance_km,
+        sum(transportation_distance) as total_distance_km,
         avg(on_time_flag) as on_time_rate,
         avg(delay_minutes) as avg_delay_minutes
     from base

@@ -28,7 +28,6 @@ combined as (
         case
             when t.timeliness_severity = 'critical'
               or r.route_risk_severity = 'critical'
-              or sr.supplier_route_severity = 'critical'
               or vd.utilization_severity = 'critical' then 1
             else 0
         end as has_critical_issue

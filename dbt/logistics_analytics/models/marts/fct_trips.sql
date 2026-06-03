@@ -23,7 +23,7 @@ select
     -- Timestamps
     booking_date,
     trip_start_date,
-    trip_end_date,
+    estimated_trip_end_date,
     planned_eta,
     actual_eta
 

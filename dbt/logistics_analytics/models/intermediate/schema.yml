@@ -13,12 +13,14 @@ models:
         description: Timeliness severity bucket based on delay between planned and actual ETA.
         tests:
           - accepted_values:
-              values: ['on_time', 'medium', 'high', 'critical', 'unknown']
+              arguments:
+                values: ['on_time', 'medium', 'high', 'critical', 'unknown']
       - name: on_time_flag
         description: Normalized binary indicator for on-time delivery.
         tests:
           - accepted_values:
-              values: [0, 1]
+              arguments:
+                values: [0, 1]
       - name: transportation_distance_km
         description: Transportation distance in kilometers.
 
@@ -34,7 +36,8 @@ models:
         description: Severity bucket signaling route-level planning risk.
         tests:
           - accepted_values:
-              values: ['stable', 'medium', 'high', 'critical', 'low_sample']
+              arguments:
+                values: ['stable', 'medium', 'high', 'critical', 'low_sample']
 
 
   - name: int_vehicle_utilization
@@ -49,7 +52,8 @@ models:
         description: Severity bucket for daily vehicle underutilization.
         tests:
           - accepted_values:
-              values: ['healthy', 'medium', 'high', 'critical', 'unknown']
+              arguments:
+                values: ['healthy', 'medium', 'high', 'critical', 'unknown']
 
   - name: int_problem_flags
     description: Consolidated per-booking problem flags for executive and section dashboards.
@@ -63,4 +67,5 @@ models:
         description: Whether any problem dimension is currently in critical state.
         tests:
           - accepted_values:
-              values: [0, 1]
+              arguments:
+                values: [0, 1]
