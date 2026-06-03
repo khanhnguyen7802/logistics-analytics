@@ -2,6 +2,8 @@ from datetime import datetime
 
 from airflow.sdk import dag, task
 from logistics_analytics.ingest import convert_to_parquet, create_duckdb_table
+from logistics_analytics.dbt_runner import run_dbt_command
+
 
 # Create DAG
 @dag(
@@ -30,8 +32,25 @@ def my_dag():
       except Exception as e:
           raise Exception(f"Error in task_create_duckdb_table: {str(e)}") from e
 
+    @task(task_id='dbt_deps')
+    def task_dbt_deps():
+        return run_dbt_command("dbt deps")
+
+    @task(task_id='dbt_run')
+    def task_dbt_run():
+        return run_dbt_command("dbt run")
+
+    @task(task_id='dbt_test')
+    def task_dbt_test():
+        return run_dbt_command("dbt test")
+
     # Set dependencies
-    task_ingest_data() >> task_create_duckdb_table()
-    # task_ingest_data() >> task_create_duckdb_table() >> task_dbt_deps() >> task_dbt_run() >> task_dbt_test()
+    (
+        task_ingest_data()
+        >> task_create_duckdb_table()
+        >> task_dbt_deps()
+        >> task_dbt_run()
+        >> task_dbt_test()
+    )
 
 my_dag()
