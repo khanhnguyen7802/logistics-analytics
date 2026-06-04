@@ -8,7 +8,7 @@
 
 ## Tech stack
 
-- Dataset: provided **.csv file** (in [data/ folder](./data/logistics_data.csv))
+- Dataset: provided **Excel file** (in [data/ folder](./data/logistics_data.csv))
 - Database: [DuckDB](https://duckdb.org/)
 - Orchestration: [Airflow](https://airflow.apache.org/)
 - Data transformation: [dbt](https://www.getdbt.com/) _(data build tool)_
@@ -26,16 +26,57 @@
 
 ### End-to-end flow
 
-1. Airflow runs ingestion from CSV to parquet and then to DuckDB raw schema.
-2. Airflow executes `dbt deps`, `dbt run`, and `dbt test`.
-3. Superset initializes metadata, creates admin account, and starts web UI.
-4. Superset connects to DuckDB at `duckdb:////workspace/logistics_tracking.duckdb`.
+1. Start the services using Docker. The services include: Airflow, Postgres, Duckdb and dbt. 
+2. `Airflow` will be responsible for automating ingestion:
+    - ingest data from Excel file
+    - convert into parquet file 
+    - create duckdb database
+
+    When starting Airflow-related services, the script `airflow-init.sh` is triggered to initialize Airflow credentials, to create required DAG folders and to set appropriate ownership. 
+
+
+3. `dbt` then transforms the data. The models are already defined, so Airflow just needs to execute `dbt deps`, `dbt run`, and `dbt test` to actually create those models inside duckdb database. 
+4. As soon as we have everything in the databse (i.e., **.duckdb**), `Superset` will initialize metadata, create admin account, and start web UI.
+    > Superset connects to DuckDB at `duckdb:////workspace/logistics_tracking.duckdb`.
+
+Superset dashboard can be seen as below: 
+
+![alt text](logistics-overview-superset.jpg)
 
 ## Setup
 
 ### 1) Configure environment
+Since this is only for learning purpose, you can just copy my whole `.env` file and put into the root folder
 
-Copy `.env.example` to `.env` and adjust credentials as needed.
+```bash
+LOGISTICS_PROJECT_ROOT=/opt/airflow/logistics_analytics_project
+
+AIRFLOW_UID=50000
+AIRFLOW_PROJ_DIR=.
+_AIRFLOW_WWW_USER_USERNAME=airflow
+_AIRFLOW_WWW_USER_PASSWORD=airflow
+
+
+# Make sure you set this to a unique secure random value on production
+DATABASE_USER=superset
+DATABASE_PASSWORD=superset
+POSTGRES_USER=superset
+POSTGRES_PASSWORD=superset
+EXAMPLES_USER=examples
+EXAMPLES_PASSWORD=examples
+
+
+SUPERSET_ADMIN_USERNAME=admin
+SUPERSET_ADMIN_PASSWORD=admin
+SUPERSET_ADMIN_FIRSTNAME=Superset
+SUPERSET_ADMIN_LASTNAME=Admin
+SUPERSET_ADMIN_EMAIL=admin@superset.com
+SUPERSET__SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://airflow:airflow@postgres/superset
+SUPERSET_DB_SCHEMA=marts
+SUPERSET_DASHBOARD_TITLE=Logistics Executive Risk Dashboard
+SUPERSET_METADATA_DB_URI=postgresql+psycopg2://airflow:airflow@postgres/superset
+
+```
 
 ### 2) Build and start the stack
 
@@ -47,6 +88,7 @@ docker compose up --build -d
 
 - Airflow UI: `http://localhost:8080`
 - Superset UI: `http://localhost:8088`
+- Duckdb UI: `http://localhost:4123`
 
 ### 4) Run the pipeline
 
@@ -59,11 +101,4 @@ Trigger DAG `my_pipeline` in Airflow to execute:
 5. `dbt_test`
 
 ### 5) Expected output datasets for BI
-
-Superset should query dashboard-serving marts:
-
-- `marts.agg_exec_summary`
-- `marts.agg_problem_on_time`
-- `marts.agg_problem_routes`
-- `marts.agg_problem_supplier_route`
-- `marts.agg_problem_vehicle_utilization`
+As soon as you have the .duckdb database, you can access Superset UI and then add the database into Superset to start building dashboards.
