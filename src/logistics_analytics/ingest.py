@@ -31,7 +31,7 @@ def get_project_root() -> Path:
 BASE_DIR = os.getenv("LOGISTICS_PROJECT_ROOT")
 DATA_EXCEL_PATH = f"{BASE_DIR}/data/transportation_logistics_tracking_dataset.xlsx"
 DATA_PARQUET_PATH = f"{BASE_DIR}/data/logistics_data.parquet"
-DUCKDB_PATH = f"{BASE_DIR}/logistics_tracking.duckdb"
+DUCKDB_PATH = f"{BASE_DIR}/db/logistics_tracking.duckdb"
 
 
 def read_excel_file() -> pd.DataFrame:

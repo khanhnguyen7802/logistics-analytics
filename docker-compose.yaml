@@ -160,7 +160,7 @@ services:
   duckdb:
     image: duckdb/duckdb
     volumes:
-      - .:/workspace
+      - ./db:/workspace
     working_dir: /workspace
     stdin_open: true
     tty: true
@@ -176,7 +176,7 @@ services:
         dbt_third_party: "dbt-duckdb"  # or whichever plugin you need
     image: my-dbt:latest
     volumes:
-      - .:/workspace
+      - ./db:/workspace/db
       - ./dbt:/usr/app/dbt
       - ./.dbt:/root/.dbt
     working_dir: /usr/app/dbt/
