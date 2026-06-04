@@ -4,9 +4,33 @@
   An integrated DE + DA project building an automated data pipeline to power scalable analytics and executive-ready dashboards for logistics operations.
 </p>
 
-## About
+![architecture](./img/architecture.png)
 
-## Tech stack
+
+## 📑 Table of Contents
+
+- [📊 Dataset](#-dataset)
+- [🌐 Architecture Overview](#-architecture-overview)
+  - [Techstack](#tech-stack)
+  - [Runtime services](#runtime-services)
+  - [End-to-end flow](#end-to-end-flow)  
+- [🔧 Setup](#setup)
+- [🚀 How-to & Demo](#-start-serving-pipeline)
+- [🤔 Future Plan](#what-could-be-better)
+
+## 📊 Dataset
+> Transportation & Logistics Analytics
+
+The dataset can be found [here](./data/transportation_logistics_tracking_dataset.xlsx). This dataset contains different components in transportation:
+- Transportation info: Booking ID, Date of Booking, actual ETA ...
+- GPS & Operation: GPS coordinates, transporting distance, vehicle info ...
+- Supplier & Customer: list of suppliers, recipients ...
+
+Right now, the dataset is scattered with NA values and un-normalized data. The goal is to transform those raw data into "usable data" that can eventually serve for better insights.  
+
+## Architecture
+
+### Tech stack
 
 - Dataset: provided **Excel file** (in [data/ folder](./data/logistics_data.csv))
 - Database: [DuckDB](https://duckdb.org/)
@@ -15,33 +39,29 @@
 - Visualization: [Apache Superset](https://superset.apache.org/)
 - Containerization: Docker
 
-## Architecture
 
 ### Runtime services
 
 - Airflow (`airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`) orchestrates ingestion and dbt tasks.
 - Postgres (`postgres`) stores Airflow and Superset metadata.
-- dbt (`dbt`) provides transformation runtime and project dependencies.
+- dbt (`dbt`) provides transformation runtime by running defined models.
 - Superset (`superset-init`, `superset`) initializes and serves BI dashboards.
 
 ### End-to-end flow
 
 1. Start the services using Docker. The services include: Airflow, Postgres, Duckdb and dbt. 
-2. `Airflow` will be responsible for automating ingestion:
-    - ingest data from Excel file
-    - convert into parquet file 
-    - create duckdb database
+2. `Airflow` will be responsible for automating:
+    - data ingestion from Excel file
+    - converting into parquet file 
+    - creating duckdb database
 
     When starting Airflow-related services, the script `airflow-init.sh` is triggered to initialize Airflow credentials, to create required DAG folders and to set appropriate ownership. 
 
 
 3. `dbt` then transforms the data. The models are already defined, so Airflow just needs to execute `dbt deps`, `dbt run`, and `dbt test` to actually create those models inside duckdb database. 
 4. As soon as we have everything in the databse (i.e., **.duckdb**), `Superset` will initialize metadata, create admin account, and start web UI.
-    > Superset connects to DuckDB at `duckdb:////workspace/logistics_tracking.duckdb`.
+    > Superset connects to DuckDB at `duckdb:///data/db/logistics_tracking.duckdb`.
 
-Superset dashboard can be seen as below: 
-
-![alt text](logistics-overview-superset.jpg)
 
 ## Setup
 
@@ -78,7 +98,7 @@ SUPERSET_METADATA_DB_URI=postgresql+psycopg2://airflow:airflow@postgres/superset
 
 ```
 
-### 2) Build and start the stack
+### 2) Build and start the services
 
 ```bash
 docker compose up --build -d
@@ -102,3 +122,15 @@ Trigger DAG `my_pipeline` in Airflow to execute:
 
 ### 5) Expected output datasets for BI
 As soon as you have the .duckdb database, you can access Superset UI and then add the database into Superset to start building dashboards.
+
+Superset dashboard can be seen as below: 
+
+![alt text](./img/logistics-overview-superset.jpg)
+
+## Demo
+For a better observation about this project, I already made a [Youtube video](https://youtu.be/4dPu6lrr2zc) to show how to start this project and how this pipeline runs.
+
+## What could be better?
+- Cloud hosting 
+- Better analysis (I suck at dashboards)
+- Notification sent back whenever pipelines fail
